@@ -1,0 +1,19 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore environment variables file
+.env
+
+# Optional: Ignore any other files or directories you want to exclude from version control
+# For example:
+# log files
+*.log
+
+# Directory for local environment-specific configuration
+local/
+
+# MacOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
