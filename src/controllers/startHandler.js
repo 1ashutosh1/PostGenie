@@ -4,7 +4,7 @@ const startHandler = async (ctx) => {
   const from = ctx.update.message.from;
   console.log("From", from);
   try {
-    await User.findOneandUpdate(
+    await User.findOneAndUpdate(
       { TelegramId: from.id },
       {
         $setOnInsert: {
@@ -12,12 +12,11 @@ const startHandler = async (ctx) => {
           lastName: from.last_name,
           isBot: from.is_bot,
           username: from.username,
-        },
+        }
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
-
-    //Store the User Information in Database
+    
     await ctx.reply(
       `Hey! ${from.first_name}, Welcome. I will be writing highly engaging social media posts for you 🚀 Just Keep feeding me with the events through the day. Let's Shine on Social Media By Posting Your Best Ideas ✨`
     );
