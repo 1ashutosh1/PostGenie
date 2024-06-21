@@ -22,6 +22,10 @@ bot.start(startHandler);
 
 bot.command('generate', generateHandler);
 
+// bot.on(message('sticker'), (ctx) => {
+//   console.log('sticker', ctx.update.message);
+// })
+
 bot.on(message("text"), messageHandler);
 
 bot.launch();

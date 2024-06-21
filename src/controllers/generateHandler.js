@@ -2,11 +2,25 @@ import GenerateOutput from "../gemini/apicall.js";
 import Event from "../models/Event.model.js";
 import User from "../models/User.model.js";
 
+const MAX_TOKENS_PER_DAY = 5000;
 
 const generateHandler = async(ctx) => {
   const from = ctx.update.message.from;
   
-  const {message_id: waitingMessageId} = await ctx.reply(`Hey! ${from.first_name}, Kindly wait for a moment. I am curating posts for you 🚀⏳`)
+  const user = await User.findOne({ TelegramId: from.id });
+  if (!user) {
+    await ctx.reply('User not found');
+    return;
+  }
+
+  if (user.promptTokens + user.completionTokens >= MAX_TOKENS_PER_DAY) {
+    await ctx.reply('Token limit reached for the day');
+    return;
+  }
+
+  const {message_id: waitingMessageId} = await ctx.reply(`Hey! ${from.first_name}, Kindly wait for a moment. I am curating posts for you 🚀⏳`);
+
+  const {message_id: loadingStickerId} = await ctx.replyWithSticker('CAACAgIAAxkBAANZZnXD02WGKP1aFjiBxnCijJM6I6sAAjgLAAJO5JlLMrFH0tlPjNA1BA');
 
   const startOfDay = new Date();
   startOfDay.setHours(0,0,0,0);
@@ -26,11 +40,11 @@ const generateHandler = async(ctx) => {
 
    if(events.length === 0){
     await ctx.deleteMessage(waitingMessageId);
+    await ctx.deleteMessage(loadingStickerId);
     await ctx.reply('No Events for the Day');
     return;
    }
 
-   console.log("events", events);
    
    //a string of all the events that the user registered till now
    const eventsofDay = events.map((event) => event.text).join(', ');
@@ -54,10 +68,11 @@ const generateHandler = async(ctx) => {
      }
 
      await ctx.deleteMessage(waitingMessageId);
+     await ctx.deleteMessage(loadingStickerId);
      await ctx.reply(obj.text);
    } catch (error) {
     console.log("Error in generate Handler", error);
-     console.log("Facing Difficulties");
+     await ctx.reply('Facing Difficulties')
    }
 
    

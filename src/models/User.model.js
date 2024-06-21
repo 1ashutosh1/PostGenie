@@ -26,11 +26,11 @@ const userSchema = mongoose.Schema(
     },
     promptTokens: {
       type: Number,
-      required: false,
+      default: 0 ,
     },
     completionTokens: {
       type: Number,
-      required: false,
+      default: 0 ,
     },
   },
   { timestamps: true }
